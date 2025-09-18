@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes";
+import enquiryRoutes from "./routes/enquiryRoutes";
 
 dotenv.config();
 const app = express();
@@ -13,6 +14,10 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.get("/api/health", (req, res) => res.json({ status: "OK" }));
+
+
+app.use("/api/enquiries", enquiryRoutes);
+
 
 // DB Connection
 mongoose
