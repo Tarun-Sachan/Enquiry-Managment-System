@@ -1,5 +1,5 @@
-import { Navigate } from "react-router-dom";
-import { getToken } from "../utils/auth";
+import { Navigate } from 'react-router-dom';
+import { getToken } from '../utils/auth';
 
 interface ProtectedRouteProps {
   children: JSX.Element;

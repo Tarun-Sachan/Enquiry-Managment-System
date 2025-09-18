@@ -1,4 +1,4 @@
-export const TOKEN_KEY = "auth_token";
+export const TOKEN_KEY = 'auth_token';
 
 export function setToken(token: string, remember = false) {
   if (remember) {

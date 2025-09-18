@@ -1,18 +1,17 @@
-
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { setToken } from "../utils/auth";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { setToken } from '../utils/auth';
 
 export default function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // fake token – in real app, call API
-    setToken("my_fake_jwt_token", true);
-    navigate("/dashboard");
+    setToken('my_fake_jwt_token', true);
+    navigate('/dashboard');
   };
 
   return (

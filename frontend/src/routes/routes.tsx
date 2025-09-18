@@ -1,7 +1,7 @@
-import Login from "../pages/Login";
-import Register from "../pages/Register";
-import Dashboard from "../pages/Dashboard";
-import ProtectedRoute from "./ProtectedRoutes";
+import Login from '../pages/Login';
+import Register from '../pages/Register';
+import Dashboard from '../pages/Dashboard';
+import ProtectedRoute from './ProtectedRoutes';
 
 interface AppRoute {
   path: string;
@@ -10,10 +10,10 @@ interface AppRoute {
 }
 
 export const appRoutes: AppRoute[] = [
-  { path: "/login", element: <Login /> },
-  { path: "/register", element: <Register /> },
+  { path: '/login', element: <Login /> },
+  { path: '/register', element: <Register /> },
   {
-    path: "/dashboard",
+    path: '/dashboard',
     element: (
       <ProtectedRoute>
         <Dashboard />

@@ -1,16 +1,16 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
     // fake register – call API here
-    console.log("Registered:", username, password);
-    navigate("/login");
+    console.log('Registered:', username, password);
+    navigate('/login');
   };
 
   return (
