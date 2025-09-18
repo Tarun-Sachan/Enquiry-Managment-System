@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 // GET /users
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    const users = await User.find({}, "-passwordHash"); // hide password
+    const users = await User.find({role:"user"}, "-passwordHash"); // hide password
     res.json(users);
   } catch (err: any) {
     res.status(500).json({ message: err.message });
