@@ -6,6 +6,8 @@ import toast from "react-hot-toast";
 import api from "../utils/api";
 import { clearToken } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
+import AddEnquiryForm from "../components/AddEnquiryForm";
+import EditEnquiryModal from "../components/EditEnquiryModal";
 type Enquiry = {
   _id: string;
   customerName: string;
@@ -117,19 +119,32 @@ export default function Dashboard() {
 
   return (
     <div className="p-6 min-h-screen bg-gray-50 animate-fadeIn">
-     <header className="flex items-center justify-between mb-6 bg-white shadow-sm p-4 rounded-lg">
-  <div>
-    <h1 className="text-2xl font-bold text-gray-800">Enquiries Dashboard</h1>
-    <p className="text-sm text-gray-500">Overview of customer enquiries</p>
+    <header className="flex items-center justify-between mb-6 bg-white shadow-md p-6 rounded-xl">
+  {/* Left Section: Title + Add Enquiry + Subtitle */}
+  <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
+    <div>
+      <h1 className="text-3xl font-extrabold text-gray-800 mb-1 md:mb-0">Enquiries Dashboard</h1>
+      <p className="text-gray-500 text-sm md:text-base">Overview of customer enquiries</p>
+    </div>
+
+
   </div>
-  <button
-    onClick={handleLogout}
-    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow transition-transform hover:scale-105"
-  >
-    Logout
-  </button>
+
+  {/* Right Section: Logout */}
+  <div>
+    <button
+      onClick={handleLogout}
+      className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl shadow-lg transition-transform hover:scale-105 hover:shadow-xl"
+    >
+      Logout
+    </button>
+  </div>
 </header>
 
+    {/* Add Enquiry Button */}
+    <div className="mt-2 mb-6 md:mt-0">
+      <AddEnquiryForm onAdded={fetchEnquiries} />
+    </div>
 
       <div className="space-y-4">
         {/* Search + tab controls */}
@@ -248,11 +263,12 @@ export default function Dashboard() {
                         >
                           View
                         </button>
+                         <EditEnquiryModal enquiry={e} onUpdated={fetchEnquiries} />
                         <button
                           onClick={() => handleEdit(e)}
                           className="px-3 py-1 rounded text-sm bg-yellow-50 text-yellow-700 border"
                         >
-                          Edit
+                          Edit*
                         </button>
                         <button
                           onClick={() => setConfirmDelete(e)}
