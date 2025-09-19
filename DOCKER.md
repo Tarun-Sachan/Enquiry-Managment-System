@@ -29,11 +29,5 @@ This document explains how to access and use the **Enquiry Management System** f
 5. To stop and remove volumes (MongoDB data will be deleted): docker compose down -v
 
 
-    
-
-    
-
-3. **User**
-4. **Staff** (Can login but has no features)
 
 
