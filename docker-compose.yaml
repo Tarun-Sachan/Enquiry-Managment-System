@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:6
+    container_name: ems_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: enquiryDB
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: ./backend
+    image: tarunsachan/ems_backend:latest
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+
+  frontend:
+    build: ./frontend
+    image: tarunsachan/ems_frontend:latest
+    env_file:
+      - ./.env
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
