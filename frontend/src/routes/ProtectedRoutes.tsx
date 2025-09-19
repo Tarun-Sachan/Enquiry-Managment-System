@@ -2,8 +2,8 @@ import { Navigate } from "react-router-dom";
 import { getToken, getUser } from "../utils/auth";
 
 interface ProtectedRouteProps {
-  children: JSX.Element;
-  allowedRoles?: string[]; // optional: roles allowed for this route
+  children: React.ReactNode;
+  allowedRoles?: string[];
 }
 
 export default function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
@@ -12,7 +12,10 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
 
   if (!token) return <Navigate to="/login" replace />;
 
-  if (allowedRoles && !allowedRoles.includes(user?.role)) {
+  // Use a default role if user or role is undefined
+  const role = user?.role || "user";
+
+  if (allowedRoles && !allowedRoles.includes(role)) {
     return <Navigate to="/dashboard" replace />; // fallback if role not allowed
   }
 

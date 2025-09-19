@@ -1,14 +1,15 @@
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv, type ConfigEnv } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
-export default ({ mode }) => {
-  // Load .env file based on mode (development, production, etc.)
+export default ({ mode }: ConfigEnv) => {
+  // Load .env variables based on mode (development, production, etc.)
   const env = loadEnv(mode, process.cwd(), "");
 
   return defineConfig({
-    plugins: [react()],
+    plugins: [react(), tailwindcss()],
     server: {
-      port: Number(env.VITE_PORT) || 3000,
+      port: Number(env.VITE_PORT) || 3000, // fallback to 3000
     },
   });
 };

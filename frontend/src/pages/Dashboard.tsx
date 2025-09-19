@@ -4,10 +4,10 @@ import * as Tabs from "@radix-ui/react-tabs";
 import * as Dialog from "@radix-ui/react-dialog";
 import toast from "react-hot-toast";
 import api from "../utils/api";
-import { clearAuth, getToken } from "../utils/auth";
+import { clearAuth, getUser } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
 import AddEnquiryForm from "../components/AddEnquiryForm";
-import EditEnquiryModal from "../components/EditEnquiryModal";
+
 
 type Enquiry = {
   _id: string;
@@ -16,10 +16,16 @@ type Enquiry = {
   phone: string;
   message: string;
   status: "open" | "in-progress" | "closed";
-  assignedTo?: { _id: string; name?: string; email?: string } | null;
+  assignedTo?: { _id: string; name?: string; email?: string, role?:string } | null;
   createdBy?: { _id: string; name?: string; email?: string } | null;
   createdAt?: string;
 };
+interface User {
+  role: string;
+  name?: string;
+  email?: string;
+}
+
 
 export default function Dashboard() {
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
@@ -100,7 +106,11 @@ export default function Dashboard() {
   };
 
   // Determine role from token (or API)
-  const userRole = getToken()?.role || "user"; // assuming your token decoding returns role
+  // const userRole = getToken()?.user?.role || "user";
+   const user = getUser() as User | null;
+  const userRole = user?.role || "user";
+
+ // assuming your token decoding returns role
 
   return (
     <div className="p-6 min-h-screen bg-gray-50 animate-fadeIn">

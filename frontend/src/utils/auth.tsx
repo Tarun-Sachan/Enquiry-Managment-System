@@ -11,15 +11,26 @@ export function setAuth(token: string, user: any, remember = false) {
     sessionStorage.setItem(USER_KEY, JSON.stringify(user));
   }
 }
+export interface User {
+  role: string;
+  name?: string;
+  email?: string;
+}
 
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
 }
 
-export function getUser(): any | null {
+// export function getUser(): any | null {
+//   const userData =
+//     localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
+//   return userData ? JSON.parse(userData) : null;
+// }
+
+export function getUser(): User | null {
   const userData =
     localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
-  return userData ? JSON.parse(userData) : null;
+  return userData ? (JSON.parse(userData) as User) : null;
 }
 
 export function clearAuth() {

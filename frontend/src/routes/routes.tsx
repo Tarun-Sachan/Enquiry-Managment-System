@@ -4,11 +4,6 @@ import Dashboard from '../pages/Dashboard';
 import AdminUsers from "../pages/AdminUsers";
 import ProtectedRoute from './ProtectedRoutes';
 import AdminEnquiries from "../pages/AdminEnquiries.tsx";
-interface AppRoute {
-  path: string;
-  element: JSX.Element;
-  protected?: boolean;
-}
 
 // export const appRoutes: AppRoute[] = [
 //   { path: '/login', element: <Login /> },
