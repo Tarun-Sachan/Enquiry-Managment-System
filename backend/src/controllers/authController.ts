@@ -52,7 +52,7 @@ export const login = async (req: Request, res: Response) => {
       { expiresIn: "30d" }
     );
 
-    return res.json({ token });
+    return res.json({ token, user:{role:user.role} });
   } catch (err: any) {
     return res.status(400).json({ error: err.errors ?? err.message });
   }

@@ -3,35 +3,67 @@ import { useNavigate } from "react-router-dom";
 import * as Label from "@radix-ui/react-label";
 import toast from "react-hot-toast";
 import api from "../utils/api";
-import { setToken } from "../utils/auth";
+import { setAuth } from "../utils/auth";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  // const handleLogin = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     const res = await api.post("/auth/login", {
+  //       email:username,
+  //       password,
+  //     });
+
+  //     // Save token in localStorage
+  //     setToken(res.data.token, true);
+
+  //     toast.success("✅ Login successful!");
+  //     setTimeout(() => navigate("/dashboard"), 1000);
+  //   } catch (err: any) {
+  //     const message =
+  //       err.response?.data?.message || "❌ Invalid credentials. Try again.";
+  //     toast.error(message);
+  //     console.error("Login error:", err.response?.data || err.message);
+  //   }
+  // };
+
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const res = await api.post("/auth/login", {
-        email:username,
-        password,
-      });
+  try {
+    const res = await api.post("/auth/login", {
+      email: username,
+      password,
+    });
 
-      // Save token in localStorage
-      setToken(res.data.token, true);
+    // Save token and user role
+    const { token, user } = res.data;
+    setAuth(token,user, true);
 
-      toast.success("✅ Login successful!");
-      setTimeout(() => navigate("/dashboard"), 1000);
-    } catch (err: any) {
-      const message =
-        err.response?.data?.message || "❌ Invalid credentials. Try again.";
-      toast.error(message);
-      console.error("Login error:", err.response?.data || err.message);
+    toast.success("✅ Login successful!");
+   
+    // Redirect based on role
+    switch (user.role) {
+      case "admin":
+        navigate("/admin/users");
+        break;
+      case "user":
+      default:
+        navigate("/dashboard");
+        break;
     }
-  };
-
+  } catch (err: any) {
+    const message =
+      err.response?.data?.message || "❌ Invalid credentials. Try again.";
+    toast.error(message);
+    console.error("Login error:", err.response?.data || err.message);
+  }
+};
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 animate-fadeIn">
       <form

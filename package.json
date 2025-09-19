@@ -1,0 +1,28 @@
+{
+  "scripts": {
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "format": "prettier --write .",
+    "prepare": "husky",
+    "tailwind:init": "tailwindcss init -p"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,md}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.44.0",
+    "@typescript-eslint/parser": "^8.44.0",
+    "eslint": "^9.35.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.6.2"
+  }
+}

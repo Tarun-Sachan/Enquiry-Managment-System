@@ -4,10 +4,11 @@ import * as Tabs from "@radix-ui/react-tabs";
 import * as Dialog from "@radix-ui/react-dialog";
 import toast from "react-hot-toast";
 import api from "../utils/api";
-import { clearToken } from "../utils/auth";
+import { clearAuth, getToken } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
 import AddEnquiryForm from "../components/AddEnquiryForm";
 import EditEnquiryModal from "../components/EditEnquiryModal";
+
 type Enquiry = {
   _id: string;
   customerName: string;
@@ -30,30 +31,13 @@ export default function Dashboard() {
   const [confirmDelete, setConfirmDelete] = useState<Enquiry | null>(null);
   const navigate = useNavigate();
 
-//   useEffect(() => {
-//   api
-//     .get("/enquiries")
-//     .then((res) => setEnquiries(res.data))
-//     .catch((err) => {
-//       if (err.response?.status === 401) {
-//         toast.error("Session expired. Please login again.");
-//         navigate("/login");
-//       } else {
-//         toast.error("Failed to fetch enquiries");
-//       }
-//     });
-// }, [navigate]);
-
-  const handleLogout = () => {
-    clearToken(); // remove token from storage
-    navigate("/login", { replace: true }); // redirect to login
-  };
+  // Fetch enquiries
   const fetchEnquiries = async (status?: string) => {
     setLoading(true);
     try {
       const params: any = {};
       if (status && status !== "all") params.status = status === "new" ? "open" : status;
-      if (search) params.search = search; // backend optional support
+      if (search) params.search = search;
       const res = await api.get("/enquiries", { params });
       setEnquiries(res.data || []);
     } catch (err: any) {
@@ -64,7 +48,6 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    // map tab keys to status: all, new (open), in-progress, closed
     const statusMap: Record<string, string | undefined> = {
       all: undefined,
       new: "open",
@@ -86,13 +69,13 @@ export default function Dashboard() {
     );
   }, [enquiries, search]);
 
-  // View
+  const handleLogout = () => {
+    clearAuth();
+    navigate("/login", { replace: true });
+  };
+
   const handleView = (e: Enquiry) => setSelected(e);
-
-  // Edit (opens dialog)
   const handleEdit = (e: Enquiry) => setEditing(e);
-
-  // Delete (soft delete)
   const handleDelete = async (e: Enquiry) => {
     try {
       await api.delete(`/enquiries/${e._id}`);
@@ -105,7 +88,6 @@ export default function Dashboard() {
     }
   };
 
-  // Save edit
   const handleSaveEdit = async (payload: Partial<Enquiry> & { _id: string }) => {
     try {
       const res = await api.put(`/enquiries/${payload._id}`, payload);
@@ -117,37 +99,33 @@ export default function Dashboard() {
     }
   };
 
+  // Determine role from token (or API)
+  const userRole = getToken()?.role || "user"; // assuming your token decoding returns role
+
   return (
     <div className="p-6 min-h-screen bg-gray-50 animate-fadeIn">
-    <header className="flex items-center justify-between mb-6 bg-white shadow-md p-6 rounded-xl">
-  {/* Left Section: Title + Add Enquiry + Subtitle */}
-  <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-    <div>
-      <h1 className="text-3xl font-extrabold text-gray-800 mb-1 md:mb-0">Enquiries Dashboard</h1>
-      <p className="text-gray-500 text-sm md:text-base">Overview of customer enquiries</p>
-    </div>
+      <header className="flex items-center justify-between mb-6 bg-white shadow-md p-6 rounded-xl">
+        <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
+          <div>
+            <h1 className="text-3xl font-extrabold text-gray-800 mb-1 md:mb-0">Enquiries Dashboard</h1>
+            <p className="text-gray-500 text-sm md:text-base">Overview of customer enquiries</p>
+          </div>
+        </div>
+        <div>
+          <button
+            onClick={handleLogout}
+            className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl shadow-lg transition-transform hover:scale-105 hover:shadow-xl"
+          >
+            Logout
+          </button>
+        </div>
+      </header>
 
-
-  </div>
-
-  {/* Right Section: Logout */}
-  <div>
-    <button
-      onClick={handleLogout}
-      className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl shadow-lg transition-transform hover:scale-105 hover:shadow-xl"
-    >
-      Logout
-    </button>
-  </div>
-</header>
-
-    {/* Add Enquiry Button */}
-    <div className="mt-2 mb-6 md:mt-0">
-      <AddEnquiryForm onAdded={fetchEnquiries} />
-    </div>
+      <div className="mt-2 mb-6 md:mt-0">
+        <AddEnquiryForm onAdded={fetchEnquiries} />
+      </div>
 
       <div className="space-y-4">
-        {/* Search + tab controls */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div className="flex items-center gap-3 w-full md:w-1/2">
             <input
@@ -171,35 +149,15 @@ export default function Dashboard() {
             className="flex gap-2"
           >
             <Tabs.List aria-label="Enquiry tabs" className="flex gap-2">
-              <Tabs.Trigger
-                value="all"
-                className="px-3 py-2 rounded-full text-sm bg-white border shadow-sm"
-              >
-                All
-              </Tabs.Trigger>
-              <Tabs.Trigger
-                value="new"
-                className="px-3 py-2 rounded-full text-sm bg-white border shadow-sm"
-              >
-                New
-              </Tabs.Trigger>
-              <Tabs.Trigger
-                value="in-progress"
-                className="px-3 py-2 rounded-full text-sm bg-white border shadow-sm"
-              >
-                In Progress
-              </Tabs.Trigger>
-              <Tabs.Trigger
-                value="closed"
-                className="px-3 py-2 rounded-full text-sm bg-white border shadow-sm"
-              >
-                Closed
-              </Tabs.Trigger>
+              <Tabs.Trigger value="all" className="px-3 py-2 rounded-full text-sm bg-white border shadow-sm">All</Tabs.Trigger>
+              <Tabs.Trigger value="new" className="px-3 py-2 rounded-full text-sm bg-white border shadow-sm">Open</Tabs.Trigger>
+              <Tabs.Trigger value="in-progress" className="px-3 py-2 rounded-full text-sm bg-white border shadow-sm">In Progress</Tabs.Trigger>
+              <Tabs.Trigger value="closed" className="px-3 py-2 rounded-full text-sm bg-white border shadow-sm">Closed</Tabs.Trigger>
             </Tabs.List>
           </Tabs.Root>
         </div>
 
-        {/* Table / List */}
+        {/* Table */}
         <div className="bg-white rounded-xl shadow overflow-x-auto">
           <table className="min-w-full divide-y">
             <thead className="bg-gray-50">
@@ -214,15 +172,11 @@ export default function Dashboard() {
             <tbody className="divide-y">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="p-6 text-center text-sm text-gray-500">
-                    Loading…
-                  </td>
+                  <td colSpan={5} className="p-6 text-center text-sm text-gray-500">Loading…</td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-6 text-center text-sm text-gray-500">
-                    No enquiries found.
-                  </td>
+                  <td colSpan={5} className="p-6 text-center text-sm text-gray-500">No enquiries found.</td>
                 </tr>
               ) : (
                 filtered.map((e) => (
@@ -250,7 +204,10 @@ export default function Dashboard() {
                     </td>
                     <td className="px-4 py-3">
                       {e.assignedTo ? (
-                        <div className="text-sm">{e.assignedTo.name || e.assignedTo.email}</div>
+                        <div>
+                          <div className="text-sm">{e.assignedTo.name}</div>
+                          <div className="text-sm">{e.assignedTo.email}</div>
+                        </div>
                       ) : (
                         <div className="text-sm text-gray-400">—</div>
                       )}
@@ -263,12 +220,12 @@ export default function Dashboard() {
                         >
                           View
                         </button>
-                         <EditEnquiryModal enquiry={e} onUpdated={fetchEnquiries} />
+                        {/* <EditEnquiryModal enquiry={e} onUpdated={fetchEnquiries} /> */}
                         <button
                           onClick={() => handleEdit(e)}
                           className="px-3 py-1 rounded text-sm bg-yellow-50 text-yellow-700 border"
                         >
-                          Edit*
+                          Edit
                         </button>
                         <button
                           onClick={() => setConfirmDelete(e)}
@@ -298,7 +255,10 @@ export default function Dashboard() {
                 <div><strong>Email:</strong> {selected.email}</div>
                 <div><strong>Phone:</strong> {selected.phone}</div>
                 <div><strong>Status:</strong> {selected.status}</div>
-                <div><strong>Message:</strong> <div className="mt-2 p-3 bg-gray-50 rounded">{selected.message}</div></div>
+                <div>
+                  <strong>Message:</strong>
+                  <div className="mt-2 p-3 bg-gray-50 rounded">{selected.message}</div>
+                </div>
               </div>
             )}
             <div className="mt-4 text-right">
@@ -316,12 +276,19 @@ export default function Dashboard() {
           <Dialog.Overlay className="fixed inset-0 bg-black/40" />
           <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-xl w-[95%] max-w-lg shadow-lg">
             <Dialog.Title className="text-lg font-semibold mb-2">Edit Enquiry</Dialog.Title>
-            {editing && <EditForm initial={editing} onCancel={() => setEditing(null)} onSave={handleSaveEdit} />}
+            {editing && (
+              <EditForm
+                initial={editing}
+                onCancel={() => setEditing(null)}
+                onSave={handleSaveEdit}
+                userRole={userRole} // ✅ pass userRole
+              />
+            )}
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
 
-      {/* Delete confirm dialog (simple) */}
+      {/* Delete Dialog */}
       <Dialog.Root open={!!confirmDelete} onOpenChange={() => setConfirmDelete(null)}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/30" />
@@ -344,8 +311,18 @@ export default function Dashboard() {
   );
 }
 
-// ---------- EditForm component (local) ----------
-function EditForm({ initial, onCancel, onSave }: { initial: Enquiry; onCancel: () => void; onSave: (p: Partial<Enquiry> & { _id: string }) => void; }) {
+// ---------- EditForm component ----------
+function EditForm({
+  initial,
+  onCancel,
+  onSave,
+  userRole,
+}: {
+  initial: Enquiry;
+  onCancel: () => void;
+  onSave: (p: Partial<Enquiry> & { _id: string }) => void;
+  userRole: string;
+}) {
   const [customerName, setCustomerName] = useState(initial.customerName);
   const [email, setEmail] = useState(initial.email);
   const [phone, setPhone] = useState(initial.phone);
@@ -363,29 +340,58 @@ function EditForm({ initial, onCancel, onSave }: { initial: Enquiry; onCancel: (
     <div className="space-y-3">
       <div>
         <label className="text-sm font-medium">Customer</label>
-        <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="mt-1 w-full p-2 border rounded" />
+        <input
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+          className="mt-1 w-full p-2 border rounded"
+        />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="text-sm font-medium">Email</label>
-          <input value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 w-full p-2 border rounded" />
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mt-1 w-full p-2 border rounded"
+          />
         </div>
         <div>
           <label className="text-sm font-medium">Phone</label>
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-1 w-full p-2 border rounded" />
+          <input
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="mt-1 w-full p-2 border rounded"
+          />
         </div>
       </div>
       <div>
         <label className="text-sm font-medium">Status</label>
-        <select value={status} onChange={(e) => setStatus(e.target.value as any)} className="mt-1 w-full p-2 border rounded">
-          <option value="open">Open</option>
-          <option value="in-progress">In Progress</option>
-          <option value="closed">Closed</option>
-        </select>
+        {userRole === "admin" ? (
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as any)}
+            className="mt-1 w-full p-2 border rounded"
+          >
+            <option value="open">Open</option>
+            <option value="in-progress">In Progress</option>
+            <option value="closed">Closed</option>
+          </select>
+        ) : (
+          <input
+            value={status}
+            disabled
+            className="mt-1 w-full p-2 border rounded bg-gray-100 text-gray-500 cursor-not-allowed"
+          />
+        )}
       </div>
       <div>
         <label className="text-sm font-medium">Message</label>
-        <textarea value={message} onChange={(e) => setMessage(e.target.value)} className="mt-1 w-full p-2 border rounded" rows={4} />
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="mt-1 w-full p-2 border rounded"
+          rows={4}
+        />
       </div>
       <div className="flex justify-end gap-2">
         <button onClick={onCancel} className="px-4 py-2 rounded bg-gray-100">Cancel</button>

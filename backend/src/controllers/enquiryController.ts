@@ -35,8 +35,9 @@ export const getEnquiries = async (req: Request, res: Response) => {
     if (req.query.assignedTo) filters.assignedTo = req.query.assignedTo;
 
     const enquiries = await Enquiry.find(filters)
-      .populate("assignedTo", "name email")
-      .populate("createdBy", "name email");
+      .populate("assignedTo", "name email ")
+      .populate("createdBy", "name email")
+      .sort({ createdAt: -1 });
 
     res.json(enquiries);
   } catch (err: any) {

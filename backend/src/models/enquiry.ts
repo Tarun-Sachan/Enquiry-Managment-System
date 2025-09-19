@@ -23,7 +23,7 @@ const enquirySchema = new Schema<IEnquiry>(
       default: "open",
     },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    assignedTo: { type: Schema.Types.ObjectId, ref: "User" },
+    assignedTo: { type: Schema.Types.ObjectId, ref: "User", default: null },
     deleted: { type: Boolean, default: false },
   },
   { timestamps: true }

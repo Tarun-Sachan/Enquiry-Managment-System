@@ -7,7 +7,7 @@ export const createEnquirySchema = z.object({
   phone: z.string().length(10, "Phone is required"),
   message: z.string().min(5, "Message cannot be empty or less than 5 characters"),
   status: z.enum(["open", "in-progress", "closed"]).optional(),
-  assignedTo: z.string().optional(), // userId
+  assignedTo: z.string().nullable().optional(), // userId
 });
 
 export type CreateEnquiryInput = z.infer<typeof createEnquirySchema>;
