@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import * as Select from "@radix-ui/react-select";
 import api from "../utils/api";
 import { toast } from "react-hot-toast";
+import AdminNavbar from "../components/AdminNavbar";
 
 interface Enquiry {
   _id: string;
@@ -90,6 +91,7 @@ export default function AdminEnquiries() {
 
   return (
     <div className="p-6">
+       <AdminNavbar />
       <h1 className="text-2xl font-bold mb-6">Enquiries Management</h1>
 
       <div className="bg-white rounded-xl shadow overflow-x-auto">

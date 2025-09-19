@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import api from "../utils/api";
 import AddUserDialog from "../components/AddUserDialog";
 import EditUserDialog from "../components/EditUserDialog"; // ✅ import it
+import AdminNavbar from "../components/AdminNavbar";
 
 interface User {
   _id: string;
@@ -46,6 +47,7 @@ export default function AdminUsers() {
 
   return (
     <div className="p-6">
+       <AdminNavbar />
       <header className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
         <AddUserDialog onAdded={fetchUsers} />
