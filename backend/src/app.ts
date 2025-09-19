@@ -23,7 +23,7 @@ app.use("/api/enquiries", enquiryRoutes);
 
 // DB Connection
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI!)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("DB Error:", err));
 
