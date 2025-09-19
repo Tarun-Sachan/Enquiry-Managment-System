@@ -72,14 +72,14 @@ The application has two types of users:
 ---
 
 
-## **7️⃣ Notes**
+## **6️⃣ Notes**
 
 
 - For production, ensure the frontend environment variable `VITE_API_URL` points to your backend API URL.
 
 ---
 
-## **8️⃣ Logout**
+## **7️⃣ Logout**
 
 Click the **Logout** button in the top-right of the dashboard. This will:
 
